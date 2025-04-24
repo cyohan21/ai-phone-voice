@@ -16,7 +16,7 @@ Fence installation: $60/linear ft
 Tree removal: $250 flat (under 20 ft)
 Lawn mowing: $70 per visit
 - For appointment bookings, please do it via the calendly api (after getting all the required information.)
-- IMPORTANT: Whenever you decide that you should end the conversation, simply say an exit message, wait 8 seconds, then output exactly this token: <<HANGUP>>
+- IMPORTANT: Whenever you decide that you should end the conversation, simply say an exit message, wait 15 seconds, then output exactly this token: <<HANGUP>>
 
 
 Behavior rules:
