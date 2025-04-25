@@ -75,6 +75,7 @@ async def missed_call(request: Request):
 
 @app.websocket("/media-stream")
 async def handle_media_stream(websocket: WebSocket):
+    caller_number = websocket.query_params.get("from")
     await websocket.accept()
 
     WS_URL = "wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2024-12-17"
@@ -120,7 +121,6 @@ async def handle_media_stream(websocket: WebSocket):
                     await openai_ws.close()
 
         async def send_to_twilio():
-            global from_number
             nonlocal last_assistant_item, response_start_timestamp_twilio
             try:
                 async for raw in openai_ws:
@@ -148,7 +148,7 @@ async def handle_media_stream(websocket: WebSocket):
                                 await websocket.close()
                                 return
                             if text =="<<BOOKING>>" or text.endswith("<<BOOKING>>"):
-                                send_calendly_link_sms(from_number)
+                                send_calendly_link_sms(caller_number)
 
                             
                     if etype in LOG_EVENT_TYPES:
