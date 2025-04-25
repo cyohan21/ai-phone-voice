@@ -174,6 +174,7 @@ async def handle_media_stream(websocket: WebSocket):
 
                         if text == '<<HANGUP>>' or text.endswith('<<HANGUP>>'):
                             print("📴  HANGUP signal received, closing WS")
+                            await asyncio.sleep(2)
                             await websocket.close()
                             return
 
