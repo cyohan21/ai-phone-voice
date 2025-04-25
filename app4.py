@@ -172,14 +172,14 @@ async def handle_media_stream(websocket: WebSocket):
                         text = ''.join(pieces).strip()
                         print("📝  FINAL TEXT:", repr(text))
 
-                        if ('<<HANGUP>>' in text or text == text.endswith('<<HANGUP>>')) and etype == 'response.done':
+                        if ('>>' in text or text == text.endswith('>>')) and etype == 'response.done':
                             print("📴  HANGUP signal received, closing WS")
                             await send_mark(websocket, stream_sid)
                             await asyncio.sleep(2)
                             await websocket.close()
                             return
 
-                        if text == '<<BOOKING>>' or text.endswith('<<BOOKING>>'):
+                        if text == '<<' or text.endswith('<<'):
                             print(f"[DEBUG][send] Booking marker detected; callSid={call_sid!r}")
                             if not call_sid:
                                 print("[ERROR][send] No call_sid! Cannot fetch call.")
