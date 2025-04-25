@@ -1,6 +1,6 @@
 import os
 import json
-import base64
+from urllib.parse import quote_plus
 import asyncio
 import websockets
 from fastapi import FastAPI, WebSocket, Request, Response
@@ -51,9 +51,9 @@ async def handle_incoming_call(request: Request):
     )
     response.pause(length=1)
     response.say("OK, you can start talking!")
-    host = request.url.hostname
     connect = Connect()
-    connect.stream(url=f'wss://{host}/media-stream?from={from_number}')
+    ws_url = f"wss://{request.url.hostname}/media-stream?caller={quote_plus(from_number)}"
+    connect.stream(url=ws_url)
     response.append(connect)
     return HTMLResponse(content=str(response), media_type="application/xml")
 
@@ -77,7 +77,7 @@ async def missed_call(request: Request):
 
 @app.websocket("/media-stream")
 async def handle_media_stream(websocket: WebSocket):
-    caller_number = websocket.query_params.get("from")
+    caller_number = websocket.query_params.get("caller")
     await websocket.accept()
 
     WS_URL = "wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2024-12-17"
