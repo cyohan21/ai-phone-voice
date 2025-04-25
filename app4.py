@@ -45,6 +45,7 @@ async def index_page():
 async def handle_incoming_call(request: Request):
     form = await request.form()
     from_number = form.get("From")
+    print("🔔 [DEBUG] Incoming-call From=", repr(from_number))
     response = VoiceResponse()
     response.say(
         "Please wait while we connect your call to the AI voice assistant."
@@ -77,7 +78,9 @@ async def missed_call(request: Request):
 
 @app.websocket("/media-stream")
 async def handle_media_stream(websocket: WebSocket):
+    print("👋 [DEBUG] WebSocket query_params=", websocket.query_params)
     caller_number = websocket.query_params.get("caller")
+    print("➡️ [DEBUG] caller_number=", repr(caller_number))
     await websocket.accept()
 
     WS_URL = "wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2024-12-17"
