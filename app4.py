@@ -1,6 +1,6 @@
 import os
 import json
-from urllib.parse import quote_plus
+import base64
 import asyncio
 import websockets
 from fastapi import FastAPI, WebSocket, Request, Response
@@ -52,9 +52,9 @@ async def handle_incoming_call(request: Request):
     )
     response.pause(length=1)
     response.say("OK, you can start talking!")
+    host = request.url.hostname
     connect = Connect()
-    ws_url = f"wss://{request.url.hostname}/media-stream?caller={quote_plus(from_number)}"
-    connect.stream(url=ws_url)
+    connect.stream(url=f'wss://{host}/media-stream?from={from_number}')
     response.append(connect)
     return HTMLResponse(content=str(response), media_type="application/xml")
 
@@ -79,7 +79,7 @@ async def missed_call(request: Request):
 @app.websocket("/media-stream")
 async def handle_media_stream(websocket: WebSocket):
     print("👋 [DEBUG] WebSocket query_params=", websocket.query_params)
-    caller_number = websocket.query_params.get("caller")
+    caller_number = websocket.query_params.get("from")
     print("➡️ [DEBUG] caller_number=", repr(caller_number))
     await websocket.accept()
 
