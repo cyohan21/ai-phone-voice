@@ -184,7 +184,8 @@ async def handle_media_stream(websocket: WebSocket):
                                 print("[ERROR][send] No call_sid! Cannot fetch call.")
                             else:
                                 call = twilio_client.calls(call_sid).fetch()
-                                from_number = call.from_
+                                print(dir(call))
+                                from_number = call.from_formatted
                                 print(f"[DEBUG][send] Twilio Call.from_ = {from_number!r}")
                                 send_calendly_link_sms(from_number)
 
