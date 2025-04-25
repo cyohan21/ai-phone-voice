@@ -78,9 +78,6 @@ async def missed_call(request: Request):
 
 @app.websocket("/media-stream")
 async def handle_media_stream(websocket: WebSocket):
-    print("👋 [DEBUG] WebSocket query_params=", websocket.query_params)
-    caller_number = websocket.query_params.get("from")
-    print("➡️ [DEBUG] caller_number=", repr(caller_number))
     await websocket.accept()
 
     WS_URL = "wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2024-12-17"
@@ -96,19 +93,23 @@ async def handle_media_stream(websocket: WebSocket):
 
         # Connection state
         stream_sid = None
+        call_sid = None
         latest_media_timestamp = 0
         last_assistant_item = None
         mark_queue = []
         response_start_timestamp_twilio = None
 
         async def receive_from_twilio():
-            nonlocal stream_sid, latest_media_timestamp
+            nonlocal stream_sid, call_sid, latest_media_timestamp
             try:
                 async for message in websocket.iter_text():
                     data = json.loads(message)
                     event = data.get('event')
+                    print(f"[DEBUG][receive] event={event}, payload={data}")
                     if event == 'start':
                         stream_sid = data['start']['streamSid']
+                        call_sid   = data["start"]["callSid"]
+                        print(f"[DEBUG][receive] Captured streamSid={stream_sid}, callSid={call_sid}")
                         latest_media_timestamp = 0
                     elif event == 'media':
                         # forward raw audio to OpenAI
@@ -153,7 +154,10 @@ async def handle_media_stream(websocket: WebSocket):
                                 await websocket.close()
                                 return
                             if text =="<<BOOKING>>" or text.endswith("<<BOOKING>>"):
-                                await send_calendly_link_sms(caller_number)
+                                print(f"[DEBUG][send] Booking marker detected; callSid={call_sid!r}")
+                                call = twilio_client.calls(call_sid).fetch()
+                                from_number = call.from_
+                                send_calendly_link_sms(from_number)
 
                             
                     if etype in LOG_EVENT_TYPES:
