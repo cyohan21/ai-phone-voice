@@ -132,7 +132,6 @@ async def handle_media_stream(websocket: WebSocket):
             async for message in websocket.iter_text():
                 data = json.loads(message)
                 event = data.get('event')
-                print(f"[DEBUG][receive] event={event}, payload={data}")
 
                 if event == 'start':
                     stream_sid = data['start']['streamSid']
@@ -178,7 +177,7 @@ async def handle_media_stream(websocket: WebSocket):
                             await websocket.close()
                             return
 
-                        if text.strip().lower() == '<<booking>>':
+                        if text == '<<BOOKING>>' or text.endswith('<<BOOKING>>'):
                             print(f"[DEBUG][send] Booking marker detected; callSid={call_sid!r}")
                             if not call_sid:
                                 print("[ERROR][send] No call_sid! Cannot fetch call.")
