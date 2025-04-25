@@ -3,3 +3,4 @@ uvicorn[standard]
 twilio
 python-dotenv
 websockets
+python-multipart
