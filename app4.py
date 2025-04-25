@@ -43,6 +43,8 @@ async def index_page():
 
 @app.api_route("/incoming-call", methods=["GET", "POST"])
 async def handle_incoming_call(request: Request):
+    form = await request.form()
+    from_number = form.get("From")
     response = VoiceResponse()
     response.say(
         "Please wait while we connect your call to the AI voice assistant."
@@ -51,7 +53,7 @@ async def handle_incoming_call(request: Request):
     response.say("OK, you can start talking!")
     host = request.url.hostname
     connect = Connect()
-    connect.stream(url=f'wss://{host}/media-stream')
+    connect.stream(url=f'wss://{host}/media-stream?from={from_number}')
     response.append(connect)
     return HTMLResponse(content=str(response), media_type="application/xml")
 
