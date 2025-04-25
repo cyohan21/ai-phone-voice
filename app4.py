@@ -150,7 +150,7 @@ async def handle_media_stream(websocket: WebSocket):
                                 await websocket.close()
                                 return
                             if text =="<<BOOKING>>" or text.endswith("<<BOOKING>>"):
-                                send_calendly_link_sms(caller_number)
+                                await send_calendly_link_sms(caller_number)
 
                             
                     if etype in LOG_EVENT_TYPES:
