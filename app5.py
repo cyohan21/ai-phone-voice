@@ -9,7 +9,6 @@ from twilio.twiml.voice_response import VoiceResponse, Connect
 from twilio.rest import Client
 from dotenv import load_dotenv
 import httpx
-import re
 
 from urllib.parse import quote_plus
 
@@ -187,7 +186,7 @@ async def handle_media_stream(websocket: WebSocket):
                         text = ''.join(pieces).strip()
                         print("📝  FINAL TEXT:", repr(text))
 
-                        if ('>>' in text or text == text.endswith('>>')) and etype == 'response.done':
+                        if ('>>' in text or text.endswith('>>')) and etype == 'response.done':
                             print("📴  HANGUP signal received, closing WS")
                             await send_mark(websocket, stream_sid)
                             await asyncio.sleep(2)
