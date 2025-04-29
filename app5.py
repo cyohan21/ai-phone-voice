@@ -193,7 +193,7 @@ async def handle_media_stream(websocket: WebSocket):
                             await websocket.close()
                             return
                                             
-                        if '..' in text or text.endswith('..'):
+                        if '^^' in text or text.endswith('^^'):
                             print(f"[DEBUG][send] Booking marker detected; callSid={call_sid!r}")
                             if not call_sid:
                                 print("[ERROR][send] No call_sid! Cannot fetch call.")
@@ -207,7 +207,7 @@ async def handle_media_stream(websocket: WebSocket):
                         
                         if '<<' in text.lower() or text.endswith('<<'):
                             try:
-                                json_part = text.split('<<book>>')[-1].strip()
+                                json_part = text.split('<<')[-1].strip()
                                 booking_data = json.loads(json_part)
                                 print("📬 Booking data parsed:", booking_data)
                                 send_booking_to_formspree(booking_data)
