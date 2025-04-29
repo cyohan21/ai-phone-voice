@@ -48,6 +48,9 @@ async def handle_incoming_call(request: Request):
     from_number = form.get("From")
     print("🔔 [DEBUG] /incoming-call, got From =", repr(from_number))
     response = VoiceResponse()
+    response.say("You've reached Mark's Plumbing. Please speak after the beep.", voice="Polly.Matthew")  # or your preferred voice
+    response.pause(length=0.5)
+    response.play("https://actions.google.com/sounds/v1/alarms/beep_short.ogg")
 
     ws_url = f"wss://{request.url.hostname}/media-stream?caller={quote_plus(from_number)}"
     print("🔔 [DEBUG] /incoming-call, streaming to", ws_url)
@@ -144,11 +147,6 @@ async def handle_media_stream(websocket: WebSocket):
                     print(f"[DEBUG][receive] Captured streamSid={stream_sid}, callSid={call_sid}")
                     latest_media_timestamp = 0
 
-                    await openai_ws.send(json.dumps({
-                        "type": "input_audio_buffer.append",
-                        "audio": ""  # empty payload still valid
-                    }))
-                    
                     await asyncio.sleep(0.5)
                     await openai_ws.send(json.dumps({
                         "type": "user_input",
