@@ -51,7 +51,7 @@ If someone wants to book, ask for all the information ONE at a time:
   "reason": "To repair a toilet"
 }
 
-Once you have sent the json object with all fields labeled. Confirm to them that their booking appointment request has been sent.
+IMPORTANT: Please confirm after that the appointment booking has been sent.
 
 Example interactions:
 
