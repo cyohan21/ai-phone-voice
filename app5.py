@@ -50,7 +50,7 @@ async def handle_incoming_call(request: Request):
     response = VoiceResponse()
     response.say("You've reached Mark's Plumbing. Please speak after the beep.", voice="Polly.Matthew")  # or your preferred voice
     response.pause(length=0.5)
-    response.play("https://www.soundjay.com/button/beep-07.mp3")
+    response.play("https://www.soundjay.com/button/beep-01a.mp3")
     response.pause(length=0.5)
 
     ws_url = f"wss://{request.url.hostname}/media-stream?caller={quote_plus(from_number)}"
