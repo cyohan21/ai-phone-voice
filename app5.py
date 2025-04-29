@@ -190,7 +190,7 @@ async def handle_media_stream(websocket: WebSocket):
                         if '^^' in text or text.endswith('^^'):
                             print(f"[DEBUG][send] Booking marker detected; callSid={call_sid!r}")
                             await send_mark(websocket, stream_sid)
-                            await asyncio.sleep(2)
+                            await asyncio.sleep(5)
                             if not call_sid:
                                 print("[ERROR][send] No call_sid! Cannot fetch call.")
                             else:
