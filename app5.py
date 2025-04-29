@@ -120,15 +120,6 @@ async def handle_media_stream(websocket: WebSocket):
     try:
         await initialize_session(openai_ws)
         print("✅ [DEBUG] initialize_session succeeded")
-
-        # Have the assistant speak first
-        await openai_ws.send(json.dumps({
-            "type": "user_input",
-            "input": {
-                "text": "You've reached Mark's Plumbing. How can we help you today?"
-            }
-    }))
-        print("✅ [DEBUG] Initial assistant prompt sent")
     except Exception as e:
         print("❌ [ERROR] initialize_session raised:", e)
 
