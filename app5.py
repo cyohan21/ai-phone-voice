@@ -152,13 +152,7 @@ async def handle_media_stream(websocket: WebSocket):
                     call_sid = data['start']['callSid']
                     print(f"[DEBUG][receive] Captured streamSid={stream_sid}, callSid={call_sid}")
                     latest_media_timestamp = 0
-                    await openai_ws.send(json.dumps({
-                        "type": "user_input",
-                        "input": {
-                            "text": "You've reached Mark's Plumbing. How can we help you today?"
-                        }
-                    }))
-                    print("✅ [DEBUG] Sent initial assistant greeting after stream start")
+                    
                 elif event == 'media':
                     latest_media_timestamp = int(data['media']['timestamp'])
                     await openai_ws.send(json.dumps({
