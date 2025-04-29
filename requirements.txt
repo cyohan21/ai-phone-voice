@@ -4,3 +4,4 @@ twilio
 python-dotenv
 websockets
 python-multipart
+httpx
