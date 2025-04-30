@@ -48,7 +48,7 @@ async def handle_incoming_call(request: Request):
     from_number = form.get("From")
     print("🔔 [DEBUG] /incoming-call, got From =", repr(from_number))
     response = VoiceResponse()
-    response.say("You've reached Mark's Plumbing. Please speak after the beep.", voice="Polly.Matthew")  # or your preferred voice
+    response.say("You've reached Mark's Plumbing. We're connecting you now.", voice="Polly.Matthew")  # or your preferred voice
     response.pause(length=0.5)
 
     ws_url = f"wss://{request.url.hostname}/media-stream?caller={quote_plus(from_number)}"
