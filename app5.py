@@ -189,6 +189,15 @@ async def handle_media_stream(websocket: WebSocket):
                         text = ''.join(pieces).strip()
                         print("📝  FINAL TEXT:", repr(text))
 
+                        if '<<' in text.lower() or text.endswith('<<'):
+                            try:
+                                json_part = text.split('<<')[-1].strip()
+                                booking_data = json.loads(json_part)
+                                print("📬 Booking data parsed:", booking_data)
+                                send_booking_to_formspree(booking_data)
+                            except Exception as e:
+                                print("❌ Failed to parse booking JSON:", e)
+
                         if ('>>' in text or text.endswith('>>')) and etype == 'response.done':
                             print("📴  HANGUP signal received, closing WS")
                             await send_mark(websocket, stream_sid)
@@ -207,15 +216,6 @@ async def handle_media_stream(websocket: WebSocket):
                                 method="POST",
                                 url="https://ai-phone-voice.onrender.com/forward-call"
                             )
-                        
-                        if '<<' in text.lower() or text.endswith('<<'):
-                            try:
-                                json_part = text.split('<<')[-1].strip()
-                                booking_data = json.loads(json_part)
-                                print("📬 Booking data parsed:", booking_data)
-                                send_booking_to_formspree(booking_data)
-                            except Exception as e:
-                                print("❌ Failed to parse booking JSON:", e)
 
                 if etype in LOG_EVENT_TYPES and SHOW_TIMING_MATH:
                     print(f"Event: {etype}", evt)
