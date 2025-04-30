@@ -180,10 +180,19 @@ async def handle_media_stream(websocket: WebSocket):
 
                 # Debug OpenAI error events fully
                 if etype == 'error':
-                    print("⛔ OpenAI error event:", json.dumps(evt, indent=2))
-                elif etype in LOG_EVENT_TYPES and SHOW_TIMING_MATH:
-                    print(f"Event: {etype}", evt)
+                    # Dump the entire event for reference
+                    print("⛔ OpenAI error event (full payload):")
+                    print(json.dumps(evt, indent=2))
 
+                    # Extract and print the key fields for quick visibility
+                    error_info = evt.get('error', {})
+                    print(f"⛔ Error type   : {error_info.get('type')!r}")
+                    print(f"⛔ Error code   : {error_info.get('code')!r}")
+                    print(f"⛔ Error message: {error_info.get('message')!r}")
+
+                    # Skip any further handling for this event
+                    continue
+                
                 if etype == 'response.done':
                     outputs = evt['response'].get('output', [])
                     if outputs:
