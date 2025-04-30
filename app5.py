@@ -122,6 +122,15 @@ async def handle_media_stream(websocket: WebSocket):
     try:
         await initialize_session(openai_ws)
         print("✅ [DEBUG] initialize_session succeeded")
+
+        await openai_ws.send(json.dumps({
+        "type": "response.create",
+        "response": {
+            "modalities": ["text", "audio"]
+        }
+        }))
+        print("🔔 [DEBUG] Sent initial response.create to start AI turn")
+        
     except Exception as e:
         print("❌ [ERROR] initialize_session raised:", e)
 
