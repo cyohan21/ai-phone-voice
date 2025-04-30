@@ -87,7 +87,7 @@ Use these rules to determine the lead score:
 - Up to 10 points for property fit (knows what they want = 10, flexible = 5, unclear = 0)
 
 Add both fields to the booking JSON like this:
-```json
+
 {
   "notes": "Seller has a 3-bedroom home in Markham, wants to move within 2 months. Not working with an agent. Recent kitchen reno. Wants $950K.",
   "lead_score": 85
