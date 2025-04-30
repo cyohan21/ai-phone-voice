@@ -91,6 +91,8 @@ async def forward_call(request: Request):
 
 @app.websocket("/media-stream")
 async def handle_media_stream(websocket: WebSocket):
+
+    greeting_sent = False
     # Debug entry
     print("🌐 [DEBUG] WebSocket handler invoked; headers =", dict(websocket.headers))
     try:
@@ -122,15 +124,6 @@ async def handle_media_stream(websocket: WebSocket):
     try:
         await initialize_session(openai_ws)
         print("✅ [DEBUG] initialize_session succeeded")
-
-        await openai_ws.send(json.dumps({
-        "type": "response.create",
-        "response": {
-            "modalities": ["text", "audio"]
-        }
-        }))
-        print("🔔 [DEBUG] Sent initial response.create to start AI turn")
-        
     except Exception as e:
         print("❌ [ERROR] initialize_session raised:", e)
 
@@ -247,6 +240,27 @@ async def handle_media_stream(websocket: WebSocket):
         except Exception as e:
             print("❌ [ERROR] send_to_twilio crashed:", e)
             raise
+    
+    async def receive_from_openai():
+        nonlocal greeting_sent
+        async for raw in openai_ws:
+            evt = json.loads(raw)
+            etype = evt.get("type")
+
+            # Only when the session is fully created:
+            if etype == "session.created" and not greeting_sent:
+                await openai_ws.send(json.dumps({
+                  "type": "response.create",
+                  "response": {
+                    "turn": "assistant",
+                    "modalities": ["text","audio"],
+                    "messages": [{
+                      "role": "assistant",
+                      "content": "Hi! This is Sarah from Mark’s Properties. How can we help you today with buying or selling a home?"
+                    }]
+                  }
+                }))
+                greeting_sent = True
 
     async def send_mark(connection, stream_sid):
         mark_event = {"event": "mark", "streamSid": stream_sid, "mark": {"name": "responsePart"}}
@@ -255,7 +269,7 @@ async def handle_media_stream(websocket: WebSocket):
 
     print("🔔 [DEBUG] Entering asyncio.gather")
     try:
-        await asyncio.gather(receive_from_twilio(), send_to_twilio())
+        await asyncio.gather(receive_from_twilio(), send_to_twilio(), receive_from_openai())
     except Exception as e:
         print("❌ [ERROR] asyncio.gather returned:", e)
     finally:
