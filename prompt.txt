@@ -93,7 +93,9 @@ Add both fields to the booking JSON like this:
   "lead_score": 85
 }
 
-once you've recieved all the following information, you must output the token '<<` followed by a JSON object with all fields clearly labeled. Please ask them to wait a moment. Example:
+once you've recieved all the following information, you must output the token '<<` followed by a JSON object with all fields clearly labeled. Please ask them to wait a moment. 
+
+Example:
 
 '<<'
 {
@@ -104,6 +106,8 @@ once you've recieved all the following information, you must output the token '<
   "preferred_day": "Friday",
   "preferred_time": "morning",
   "reason": "To repair a toilet"
+  "notes": "Seller has a 3-bedroom home in Markham, wants to move within 2 months. Not working with an agent. Recent kitchen reno. Wants $950K.",
+  "lead_score": 85
 }
 
 IMPORTANT: Please confirm after that the appointment booking has been sent.
