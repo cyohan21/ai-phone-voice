@@ -126,6 +126,7 @@ async def handle_media_stream(websocket: WebSocket):
         await openai_ws.send(json.dumps({
         "type": "response.create",
         "response": {
+            "turn": "assistant",
             "modalities": ["text", "audio"],
             "messages": [
             {
