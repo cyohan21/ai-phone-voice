@@ -126,7 +126,13 @@ async def handle_media_stream(websocket: WebSocket):
         await openai_ws.send(json.dumps({
         "type": "response.create",
         "response": {
-            "modalities": ["text", "audio"]
+            "modalities": ["text", "audio"],
+            "messages": [
+            {
+                "role": "assistant",
+                "content": "Hi! This is Sarah from Mark's Properties. How can we help you today with buying or selling a home?"
+            }
+        ]
         }
         }))
         print("🔔 [DEBUG] Sent initial response.create to start AI turn")
