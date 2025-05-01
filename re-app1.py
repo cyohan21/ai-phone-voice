@@ -12,8 +12,8 @@ app = FastAPI()
 # Twilio config
 TWILIO_NUMBER = os.getenv("TWILIO_NUMBER")
 BUSINESS_PHONE = os.getenv("BUSINESS_PHONE")  # The number to forward calls to
-TWILIO_SID = os.getenv("TWILIO_ACCOUNT_SID")
-TWILIO_AUTH = os.getenv("TWILIO_AUTH_TOKEN")
+TWILIO_SID = os.getenv("TWILIO_SID")
+TWILIO_AUTH = os.getenv("TWILIO_AUTH")
 
 twilio_client = Client(TWILIO_SID, TWILIO_AUTH)
 
