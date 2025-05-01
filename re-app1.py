@@ -28,7 +28,7 @@ async def forward_call(request: Request):
 
     # Forward the call and record it
     dial = response.dial(
-        timeout=20,
+        timeout=15,
         action="/missed-call",  # Triggered after dial attempt ends
         caller_id=TWILIO_NUMBER,
         record="record-from-answer",
@@ -76,7 +76,7 @@ async def check_recording(request: Request):
         print("❌ No 'From' number in form — skipping SMS.")
         return Response(status_code=204)
     # Treat short calls (e.g., <10s) as missed
-    if duration < 20:
+    if duration < 40:
         try:
             print("⚠️ Short call detected — sending follow-up SMS...")
             twilio_client.messages.create(
