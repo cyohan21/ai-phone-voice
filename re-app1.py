@@ -56,7 +56,7 @@ async def missed_call(request: Request):
         try:
             print("✅ Missed call condition met, sending SMS…")
             twilio_client.messages.create(
-                body="Hey! Sorry we missed your call. How can we help today?",
+                body="Hey! Sorry we missed your call. How can we help?",
                 from_=TWILIO_NUMBER,
                 to=from_number
             )
@@ -85,7 +85,7 @@ async def check_recording(request: Request):
         try:
             print("⚠️ Short call detected — sending follow-up SMS...")
             twilio_client.messages.create(
-                body="Looks like we missed your call or it ended quickly. How can we help?",
+                body="Hey! Sorry we missed your call. How can we help?",
                 from_=TWILIO_NUMBER,
                 to=from_number
             )
