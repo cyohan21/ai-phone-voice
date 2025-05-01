@@ -11,28 +11,33 @@ app = FastAPI()
 
 # Twilio config
 TWILIO_NUMBER = os.getenv("TWILIO_NUMBER")
-BUSINESS_PHONE = os.getenv("BUSINESS_PHONE")  # Number to forward calls to
+BUSINESS_PHONE = os.getenv("BUSINESS_PHONE")
 TWILIO_SID = os.getenv("TWILIO_SID")
 TWILIO_AUTH = os.getenv("TWILIO_AUTH")
 
 twilio_client = Client(TWILIO_SID, TWILIO_AUTH)
 
+# Temp in-memory store for CallSid → From number
+callers = {}
 
 @app.post("/forward-call")
 async def forward_call(request: Request):
     form = await request.form()
     from_number = form.get("From")
-    print(f"📞 Incoming call from {from_number}")
+    call_sid = form.get("CallSid")
+    print(f"📞 Incoming call from {from_number}, SID: {call_sid}")
+
+    # Store caller by CallSid
+    if call_sid and from_number:
+        callers[call_sid] = from_number
 
     response = VoiceResponse()
-
-    # Forward the call and record it
     dial = response.dial(
         timeout=15,
-        action="/missed-call",  # Triggered after dial attempt ends
+        action="/missed-call",
         caller_id=TWILIO_NUMBER,
         record="record-from-answer",
-        recording_status_callback="/check-recording",  # For short call detection
+        recording_status_callback="/check-recording",
         recording_status_callback_event="completed"
     )
     dial.number(BUSINESS_PHONE)
@@ -49,14 +54,12 @@ async def missed_call(request: Request):
 
     if status in ("busy", "no-answer", "failed", "canceled"):
         try:
-            print("✅  Missed call condition met, sending SMS…")
+            print("✅ Missed call condition met, sending SMS…")
             twilio_client.messages.create(
                 body="Hey! Sorry we missed your call. How can we help today?",
                 from_=TWILIO_NUMBER,
                 to=from_number
             )
-            # Optional: Trigger your AI assistant here
-            # await handle_ai_message(from_number, "Missed call — user did not connect.")
         except Exception as e:
             print("❌ Failed to send SMS:", e)
     else:
@@ -68,14 +71,16 @@ async def missed_call(request: Request):
 @app.post("/check-recording")
 async def check_recording(request: Request):
     form = await request.form()
-    from_number = form.get("From")
+    call_sid = form.get("CallSid")
     duration = int(form.get("RecordingDuration", "0"))
-    print(f"🎙️ Recording duration from {from_number}: {duration} seconds")
+    from_number = callers.get(call_sid)
+
+    print(f"🎙️ Recording SID: {call_sid}, Duration: {duration}s, Caller: {from_number or 'Unknown'}")
 
     if not from_number:
-        print("❌ No 'From' number in form — skipping SMS.")
+        print("❌ No caller number found — skipping SMS.")
         return Response(status_code=204)
-    # Treat short calls (e.g., <10s) as missed
+
     if duration < 40:
         try:
             print("⚠️ Short call detected — sending follow-up SMS...")
@@ -84,8 +89,6 @@ async def check_recording(request: Request):
                 from_=TWILIO_NUMBER,
                 to=from_number
             )
-            # Optional: Trigger AI again
-            # await handle_ai_message(from_number, "Short call — follow-up initiated.")
         except Exception as e:
             print("❌ Failed to send SMS for short call:", e)
 
