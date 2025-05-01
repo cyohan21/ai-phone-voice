@@ -72,8 +72,11 @@ async def check_recording(request: Request):
     duration = int(form.get("RecordingDuration", "0"))
     print(f"🎙️ Recording duration from {from_number}: {duration} seconds")
 
+    if not from_number:
+        print("❌ No 'From' number in form — skipping SMS.")
+        return Response(status_code=204)
     # Treat short calls (e.g., <10s) as missed
-    if duration < 10:
+    if duration < 20:
         try:
             print("⚠️ Short call detected — sending follow-up SMS...")
             twilio_client.messages.create(
